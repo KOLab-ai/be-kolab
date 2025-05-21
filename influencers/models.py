@@ -6,9 +6,12 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+class Domicile(models.Model):
+    city = models.CharField(max_length=100)
+
 class Influencer(models.Model):
     full_name = models.CharField(max_length=100)
-    domicile = models.CharField(max_length=100)
+    domicile = models.OneToOneField(Domicile,on_delete=models.DO_NOTHING)
     description = models.TextField(blank=True, null=True)
     email = models.EmailField()
     phone = models.CharField(max_length=20)
