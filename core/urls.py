@@ -12,4 +12,5 @@ urlpatterns = [
     path("api/v1/auth/google/", GoogleLogin.as_view(), name="google_login"),
     path("api/v1/", include("influencers.urls")),
     path("api/v1/", include("profiles.urls")),
+    path("api/v1/", include("campaigns.urls")),
 ]
