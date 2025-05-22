@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+from datetime import timedelta
 import os
 from pathlib import Path
 
@@ -48,7 +49,7 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "rest_framework",
     "rest_framework.authtoken",
-    'dj_rest_auth',
+    "dj_rest_auth",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
@@ -57,7 +58,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "influencers",
     "profiles",
-    "campaigns"
+    "campaigns",
 ]
 SITE_ID = 1
 
@@ -131,20 +132,21 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-     
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
-    )
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
+    ),
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 10,  # Default page size
 }
 
 REST_AUTH = {
-    'USE_JWT': True,
+    "USE_JWT": True,
 }
 
-ACCOUNT_LOGIN_METHODS = {'email'}
-ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+ACCOUNT_LOGIN_METHODS = {"email"}
+ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
 ACCOUNT_EMAIL_VERIFICATION = "none"
 
 SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
@@ -175,6 +177,9 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 
 USE_TZ = True
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=999),
+    }
 
 
 # Static files (CSS, JavaScript, Images)
