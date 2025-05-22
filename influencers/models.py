@@ -1,17 +1,22 @@
+from uuid import uuid4
 from django.db import models
 
 class Category(models.Model):
+    id = models.CharField(primary_key=True, default=uuid4)
     name = models.CharField(max_length=100)
 
     def __str__(self):
         return self.name
 
 class Domicile(models.Model):
+    id = models.CharField(primary_key=True, default=uuid4)
     city = models.CharField(max_length=100)
 
 class Influencer(models.Model):
+    id = models.CharField(primary_key=True, default=uuid4)
     full_name = models.CharField(max_length=100)
-    domicile = models.OneToOneField(Domicile,on_delete=models.DO_NOTHING)
+    profile_picture = models.CharField(max_length=255)
+    domicile = models.ForeignKey(Domicile,on_delete=models.DO_NOTHING, null=True, blank=True)
     description = models.TextField(blank=True, null=True)
     email = models.EmailField()
     phone = models.CharField(max_length=20)
@@ -24,7 +29,7 @@ class Influencer(models.Model):
 class SocialPlatform(models.Model):
     influencer = models.ForeignKey(Influencer, on_delete=models.CASCADE, related_name='social_platforms')
     platform = models.CharField(max_length=50)
-    profile_url = models.URLField()
+    profile_url = models.CharField(max_length=255)
     username = models.CharField(max_length=100)
     followers = models.PositiveIntegerField()
     engagement_rate = models.CharField(max_length=10, blank=True, null=True)
