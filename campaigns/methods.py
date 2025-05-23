@@ -1,4 +1,6 @@
+import json
 from campaigns.models import Campaign
+from campaigns.prompts import MATCHING_PROMPTS
 from influencers.models import Influencer
 from influencers.serializers import InfluencerSerializer
 from core.chroma import chroma_collection
@@ -33,6 +35,27 @@ def generate_query(campaign, locations, categories_data):
     return str(response.choices[0].message.content)
 
 
+def generate_report(campaign, influencer):
+    prompt = MATCHING_PROMPTS.format(
+        campaign_json=json.dumps(campaign),
+        influencer_json=json.dumps(influencer, indent=4),
+    )
+    response = openai.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {
+                "role": "system",
+                "content": prompt,
+            },
+            {"role": "user", "content": "Generate Report with Markdown Format"},
+        ],
+    )
+
+    return str(response.choices[0].message.content)
+
+
+
+
 def get_recomendations(campaign: Campaign):
     target_interests = campaign.target_interests.all()
     target_locations = campaign.target_locations.all()
@@ -45,38 +68,26 @@ def get_recomendations(campaign: Campaign):
     category_filters = [{f"category_{cat}": True} for cat in categories_data]
 
     metadata_filter = {
-        "$and": [
-            {"domicile": {"$in": locations}},
-            {"$or": category_filters}
-        ]
+        "$and": [{"domicile": {"$in": locations}}, {"$or": category_filters}]
     }
 
     if len(category_filters) > 1:
         metadata_filter = {
-            "$and": [
-                {"domicile": {"$in": locations}},
-                {"$or": category_filters}
-            ]
+            "$and": [{"domicile": {"$in": locations}}, {"$or": category_filters}]
         }
     elif len(category_filters) == 1:
         # No need for $or if only one filter
         metadata_filter = {
-            "$and": [
-                {"domicile": {"$in": locations}},
-                category_filters[0]
-            ]
+            "$and": [{"domicile": {"$in": locations}}, category_filters[0]]
         }
     else:
         # No categories, just filter on domicile
-        metadata_filter = {
-            "domicile": {"$in": locations}
-        }
+        metadata_filter = {"domicile": {"$in": locations}}
 
     # metadata_filter = {"domicile": {"$in": locations}}
 
     results = chroma_collection.query(
-        query_texts=[query_text], n_results=5, 
-        where=metadata_filter
+        query_texts=[query_text], n_results=5, where=metadata_filter
     )
     print(results)
     metadata_list = results.get("metadatas", [[]])[0]

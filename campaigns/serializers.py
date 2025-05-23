@@ -1,15 +1,21 @@
 from rest_framework import serializers
-from .models import Campaign, Domicile, Category
+
+from influencers.models import Category, Domicile
+from .models import Campaign
 
 class CampaignSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    target_locations = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Domicile.objects.all()
-    )
-    target_interests = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Category.objects.all()
-    )
 
     class Meta:
         model = Campaign
         fields = '__all__'
+
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+
+        # Replace UUIDs with readable names
+        rep['target_locations'] = [loc.city for loc in instance.target_locations.all()]
+        rep['target_interests'] = [interest.name for interest in instance.target_interests.all()]
+
+        return rep

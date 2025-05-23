@@ -37,4 +37,4 @@ class Campaign(models.Model):
     description_product = models.TextField()
 
     def __str__(self):
-        return f"{self.campaign_goal} - {self.user.fullname}"
+        return f"{self.campaign_goal} - {self.user}"
