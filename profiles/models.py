@@ -4,14 +4,14 @@ from django.contrib.auth.models import User
 
 class Profile(models.Model):
     ROLE_CHOICES = [
-        ("client", "Client"),
+        ("marketer", "Marketer"),
         ("influencer", "Influencer"),
     ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
     fullname = models.CharField(max_length=100)
-    email = models.EmailField()  # Optional: this can be redundant with User.email
+    email = models.EmailField()  
     company = models.CharField(max_length=100, blank=True, null=True)
     position_title = models.CharField(max_length=100, blank=True, null=True)
 
