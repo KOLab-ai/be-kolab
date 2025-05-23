@@ -4,26 +4,25 @@ from rest_framework.decorators import action
 from campaigns.methods import get_recomendations, generate_report
 from influencers.models import Influencer
 from influencers.serializers import InfluencerSerializer
-from .models import Campaign
+from .models import Campaign, MatchingReport
 from .serializers import CampaignSerializer
 from rest_framework import status
+
 
 class CampaignViewSet(viewsets.ModelViewSet):
     queryset = Campaign.objects.all()
     serializer_class = CampaignSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-
-
-    @action(detail=True, methods=['get'], url_path='matching')
+    @action(detail=True, methods=["get"], url_path="matching")
     def matching(self, request, pk=None):
         campaign = self.get_object()
-        influencer_id = request.query_params.get('influencerId')
+        influencer_id = request.query_params.get("influencerId")
 
         if not influencer_id:
             return Response(
                 {"error": "Missing 'influencerId' query parameter."},
-                status=status.HTTP_400_BAD_REQUEST
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         try:
@@ -31,20 +30,27 @@ class CampaignViewSet(viewsets.ModelViewSet):
         except Influencer.DoesNotExist:
             return Response(
                 {"error": f"Influencer with id {influencer_id} not found."},
-                status=status.HTTP_404_NOT_FOUND
+                status=status.HTTP_404_NOT_FOUND,
             )
 
-        # Convert model instances to dictionaries (adjust serialization as needed)
+        existing_report = MatchingReport.objects.filter(
+            campaign=campaign, influencer=influencer
+        ).first()
+
+        if existing_report:
+            return Response({"report": existing_report.report})
+
         campaign_data = CampaignSerializer(campaign).data
         influencer_data = InfluencerSerializer(influencer).data
-
-        # Generate the matching report
         report = generate_report(campaign_data, influencer_data)
+
+        MatchingReport.objects.create(
+            campaign=campaign, influencer=influencer, report=report
+        )
 
         return Response({"report": report})
 
-
-    @action(detail=True, methods=['get'], url_path='recommendations')
+    @action(detail=True, methods=["get"], url_path="recommendations")
     def recommendations(self, request, pk=None):
         campaign = self.get_object()
 

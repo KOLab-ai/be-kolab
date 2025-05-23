@@ -1,9 +1,8 @@
 import uuid
 from django.contrib.auth.models import User
 from django.db import models
-from django.utils import choices
 
-from influencers.models import Category, Domicile
+from influencers.models import Category, Domicile, Influencer
 
 
 class Campaign(models.Model):
@@ -38,3 +37,14 @@ class Campaign(models.Model):
 
     def __str__(self):
         return f"{self.campaign_goal} - {self.user}"
+
+
+class MatchingReport(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)
+    influencer = models.ForeignKey(Influencer, on_delete=models.CASCADE)
+    report = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("campaign", "influencer")
