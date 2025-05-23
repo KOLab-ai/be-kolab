@@ -34,6 +34,8 @@ class Campaign(models.Model):
 
     category_product = models.CharField(max_length=100)
     description_product = models.TextField()
+    recommended_influencers = models.ManyToManyField(Influencer, blank=True, related_name='recommended_for')
+
 
     def __str__(self):
         return f"{self.campaign_goal} - {self.user}"

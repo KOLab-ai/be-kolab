@@ -50,13 +50,22 @@ class CampaignViewSet(viewsets.ModelViewSet):
 
         return Response({"report": report})
 
+
     @action(detail=True, methods=["get"], url_path="recommendations")
     def recommendations(self, request, pk=None):
         campaign = self.get_object()
 
-        recommended_data = get_recomendations(campaign)
+        if campaign.recommended_influencers.exists():
+            recommended_influencers = campaign.recommended_influencers.all()
+            data = InfluencerSerializer(recommended_influencers, many=True).data
+            return Response(data)
 
-        return Response(recommended_data)
+        recommended_influencers = get_recomendations(campaign)
+        campaign.recommended_influencers.set(recommended_influencers)
+        serialized = InfluencerSerializer(recommended_influencers, many=True).data
+
+        return Response(serialized)
+
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
