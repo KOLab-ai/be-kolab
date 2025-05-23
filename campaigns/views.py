@@ -39,15 +39,15 @@ class CampaignViewSet(viewsets.ModelViewSet):
 
         if existing_report:
             return Response({"report": existing_report.report})
-
         campaign_data = CampaignSerializer(campaign).data
         influencer_data = InfluencerSerializer(influencer).data
+        print(campaign_data, influencer_data)
         report = generate_report(campaign_data, influencer_data)
-
+        #
         MatchingReport.objects.create(
-            campaign=campaign, influencer=influencer, report=report
+            campaign=campaign, influencer=influencer, report=""
         )
-
+        #
         return Response({"report": report})
 
 

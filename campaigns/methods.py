@@ -95,5 +95,4 @@ def get_recomendations(campaign: Campaign):
 
     influencers = Influencer.objects.filter(id__in=influencer_ids)
 
-    serialized = InfluencerSerializer(influencers, many=True).data
-    return serialized
+    return influencers
