@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Domicile, Influencer, Category, SocialPlatform
+from .models import Domicile, Influencer, Category, RateCard, SocialPlatform
 
 class DomicileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -11,7 +11,16 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = ["id", "name"]
 
+
+class RateCardSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RateCard
+        fields = [ 'title', 'price']
+
+
 class SocialPlatformSerializer(serializers.ModelSerializer):
+    rate_cards = RateCardSerializer(many=True,required=False)
+
     class Meta:
         model = SocialPlatform
         fields = [
@@ -24,7 +33,9 @@ class SocialPlatformSerializer(serializers.ModelSerializer):
             "avg_likes_per_post",
             "avg_comments_per_post",
             "avg_views_per_post",
+            "rate_cards"
         ]
+
 
 class InfluencerSerializer2(serializers.ModelSerializer):
     categories = serializers.SerializerMethodField()
@@ -50,8 +61,8 @@ class InfluencerSerializer2(serializers.ModelSerializer):
         """Return categories as list of names"""
         return [category.name for category in obj.categories.all()]
     
+
     def create(self, validated_data):
-        # Get categories from context or initial_data
         category_names = []
         if 'categories' in self.context:
             category_names = self.context['categories']
@@ -60,23 +71,27 @@ class InfluencerSerializer2(serializers.ModelSerializer):
         
         platforms_data = validated_data.pop("social_platforms")
         domicile_city = validated_data.pop("domicile")
-        
-        # Get or create domicile
+
         domicile_obj, _ = Domicile.objects.get_or_create(city=domicile_city)
         validated_data["domicile"] = domicile_obj
-        
+
         influencer = Influencer.objects.create(**validated_data)
-        
-        # Add categories by name
+
         for name in category_names:
             category_obj, _ = Category.objects.get_or_create(name=name)
             influencer.categories.add(category_obj)
-        
-        # Create social platforms
+
         for platform_data in platforms_data:
-            SocialPlatform.objects.create(influencer=influencer, **platform_data)
-        
+            rate_cards_data = platform_data.pop("rate_cards", [])
+            social_platform = SocialPlatform.objects.create(
+                influencer=influencer,
+                **platform_data
+            )
+            for rc_data in rate_cards_data:
+                RateCard.objects.create(social_platform=social_platform, **rc_data)
+
         return influencer
+
     
     def to_representation(self, instance):
         """Override to return domicile as string in output"""

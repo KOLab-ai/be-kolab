@@ -40,3 +40,13 @@ class SocialPlatform(models.Model):
 
     def __str__(self):
         return f"{self.platform} - {self.username}"
+
+
+class RateCard(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4)
+    social_platform = models.ForeignKey(SocialPlatform, on_delete=models.CASCADE, related_name='rate_cards')
+    title = models.CharField(max_length=100)
+    price = models.PositiveIntegerField()  
+
+    def __str__(self):
+        return f"{self.title} - {self.price}"

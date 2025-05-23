@@ -31,14 +31,15 @@ def proccess_influencer_data():
     with open("influencers.json", "r", encoding="utf-8") as file:
         data = json.load(file)
 
-    for item in data[:100]:
+    for item in data[:1]:
         # Pass categories through context
         context = {"categories": item.get("categories", [])}
         serializer = InfluencerSerializer2(data=item, context=context)
 
         if serializer.is_valid():
             influencer = serializer.save()
-            print(f"Saved: {item['full_name']}")
+            print(f"Saved: {item['full_name']}, id: {influencer.id}")
+
 
             summary = generate_description(influencer)
             metadata = {
