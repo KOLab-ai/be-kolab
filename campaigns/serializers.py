@@ -3,10 +3,10 @@ from .models import Campaign, Domicile, Category
 
 class CampaignSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    target_location = serializers.PrimaryKeyRelatedField(
+    target_locations = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Domicile.objects.all()
     )
-    target_interesting = serializers.PrimaryKeyRelatedField(
+    target_interests = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Category.objects.all()
     )
 

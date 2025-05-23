@@ -2,8 +2,8 @@ import json
 
 from dotenv import load_dotenv
 
-from influencers.serializers import InfluencerSerializer, InfluencerSerializer2
-from core.chroma import collection
+from influencers.serializers import InfluencerSerializer2
+from core.chroma import chroma_collection
 import openai
 
 load_dotenv()
@@ -26,36 +26,31 @@ def generate_description(influencer) -> str:
     return str(response.choices[0].message.content)
 
 
-# Add this to your methods.py file or update your existing function
 def proccess_influencer_data():
     # Insert Ke DB
     with open("influencers.json", "r", encoding="utf-8") as file:
         data = json.load(file)
-    
-    for item in data:
+
+    for item in data[:100]:
         # Pass categories through context
-        context = {'categories': item.get('categories', [])}
+        context = {"categories": item.get("categories", [])}
         serializer = InfluencerSerializer2(data=item, context=context)
-        
+
         if serializer.is_valid():
             influencer = serializer.save()
             print(f"Saved: {item['full_name']}")
-            
-            # summary = generate_description(influencer)
-            # # Insert Chroma
-            # collection.add(
-            #     documents=[summary],
-            #     ids=[str(influencer.id)],  # Make sure ID is string
-            #     metadatas=[
-            #         {
-            #             "id": str(influencer.id),
-            #             "full_name": influencer.full_name,
-            #             "domicile": str(influencer.domicile),  # Convert to string
-            #             "categories": ",".join(
-            #                 cat.name for cat in influencer.categories.all()
-            #             ),
-            #         }
-            #     ],
-            # )
+
+            summary = generate_description(influencer)
+            metadata = {
+                "id": str(influencer.id),
+                "domicile": str(influencer.domicile.city),
+            }
+            for cat in influencer.categories.all():
+                metadata[f"category_{cat.name}"] = True
+            chroma_collection.add(
+                documents=[summary],
+                ids=[str(influencer.id)],
+                metadatas=[metadata],
+            )
         else:
             print(f"Error for {item['full_name']}: {serializer.errors}")
