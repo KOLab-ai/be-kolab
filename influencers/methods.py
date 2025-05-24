@@ -31,7 +31,7 @@ def proccess_influencer_data():
     with open("influencers.json", "r", encoding="utf-8") as file:
         data = json.load(file)
 
-    for item in data[:1]:
+    for item in data:
         # Pass categories through context
         context = {"categories": item.get("categories", [])}
         serializer = InfluencerSerializer2(data=item, context=context)
