@@ -10,6 +10,7 @@ class CampaignSerializer(serializers.ModelSerializer):
     class Meta:
         model = Campaign
         fields = [
+            "id",
             "user",
             "campaign_goal",
             "campaign_budget",
