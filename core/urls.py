@@ -1,9 +1,8 @@
 from django.contrib import admin
 from django.urls import include, path, re_path
 
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from core.views import GoogleLogin
-from core.views import RegisterView
+from rest_framework_simplejwt.views import  TokenRefreshView
+from core.views import GoogleLogin, LoginAPIView, RegisterView
 
 
 urlpatterns = [
@@ -15,7 +14,7 @@ urlpatterns = [
     path("api/v1/", include("influencers.urls")),
     path("api/v1/", include("profiles.urls")),
     path("api/v1/", include("campaigns.urls")),
-    path("api/v1/login/", TokenObtainPairView.as_view(), name="login"),
+    path("api/v1/login/", LoginAPIView.as_view(), name="login"),
     path("api/v1/login/refresh/", TokenRefreshView.as_view(), name="login_refresh"),
     path('api/v1/register/', RegisterView.as_view(), name='register'),
 ]
