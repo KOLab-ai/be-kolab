@@ -12,6 +12,7 @@ class CampaignSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "user",
+            "title",
             "campaign_goals",
             "social_platforms",
             "budget_range",

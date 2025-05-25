@@ -8,6 +8,7 @@ from campaigns.models import Campaign
 @admin.register(Campaign)
 class CampaignAdmin(admin.ModelAdmin):
     list_display = [
+            "title",
         "campaign_goals",
         "social_platforms",
         "budget_range",

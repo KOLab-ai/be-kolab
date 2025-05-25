@@ -14,6 +14,8 @@ class Campaign(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="campaigns")
     
     # Using JSONField for list data - much cleaner for free-form strings
+
+    title = models.CharField(max_length=100, default="")  # Free-form string
     campaign_goals = models.JSONField(default=list)
     social_platforms = models.JSONField(default=list)
     budget_range = models.CharField(max_length=100)  # Free-form string
