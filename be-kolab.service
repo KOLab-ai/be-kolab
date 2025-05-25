@@ -1,12 +1,13 @@
 [Unit]
-Description=Running BE
-After=network.target
+Description=Django Application
+After=network.target chroma.service
+Requires=chroma.service
 
 [Service]
 User=root
-# Group=www-data ← This line can be safely removed
 WorkingDirectory=/root/be-kolab
-ExecStart=/bin/bash -c 'cd /root/be-kolab && .venv/bin/chroma run --port 8010 --path kolab-ai & .venv/bin/gunicorn core.wsgi:application --bind 0.0.0.0:8000'
+ExecStart=/root/be-kolab/.venv/bin/gunicorn core.wsgi:application --bind 0.0.0.0:8000
+Restart=always
 
 [Install]
 WantedBy=multi-user.target

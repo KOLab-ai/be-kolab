@@ -1,0 +1,12 @@
+[Unit]
+Description=Chroma Vector Database
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=/root/be-kolab
+ExecStart=/root/be-kolab/.venv/bin/chroma run --port 8010 --path /root/be-kolab/kolab-ai
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
