@@ -1,5 +1,12 @@
+[Unit]
+Description=Running BE
+After=network.target
+
 [Service]
 User=root
 # Group=www-data ← This line can be safely removed
 WorkingDirectory=/root/be-kolab
 ExecStart=/bin/bash -c 'cd /root/be-kolab && .venv/bin/chroma run --port 8010 --path kolab-ai & .venv/bin/gunicorn core.wsgi:application --bind unix:/root/be-kolab/gunicorn.sock'
+
+[Install]
+WantedBy=multi-user.target
