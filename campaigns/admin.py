@@ -8,15 +8,15 @@ from campaigns.models import Campaign
 @admin.register(Campaign)
 class CampaignAdmin(admin.ModelAdmin):
     list_display = [
-        "campaign_goal",
-        "campaign_budget",
-        "campaign_timeline",
-        "target_socialmedia",
-        "prefer_sosmed",
-        "gender",
-        "umur",
+        "campaign_goals",
+        "social_platforms",
+        "budget_range",
+        "timeline",
+        "target_age_range",
+        "target_gender",
         # "target_locations",
         # "target_interests",
-        "category_product",
-        "description_product",
+        "preferred_platforms",
+        "product_category",
+        "product_description",
     ]

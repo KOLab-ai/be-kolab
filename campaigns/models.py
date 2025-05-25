@@ -6,39 +6,33 @@ from influencers.models import Category, Domicile, Influencer
 
 
 class Campaign(models.Model):
-    GENDER_CHOICES = [
-        ("male", "Male"),
-        ("female", "Female"),
-    ]
-
-    SOCIAL_MEDIA_CHOICES = [
-        ("yt", "YouTube"),
-        ("x", "X"),
-        ("ig", "Instagram"),
-        ("tiktok", "TikTok"),
-    ]
-
+    """
+    Recommended implementation using JSONField for free-form string lists
+    Use this if your database supports JSONField
+    """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="campaigns")
-    campaign_goal = models.CharField(max_length=255)
-    campaign_budget = models.CharField(max_length=100)
-    campaign_timeline = models.CharField(max_length=100)
-    target_socialmedia = models.CharField(max_length=10, choices=SOCIAL_MEDIA_CHOICES)
-    prefer_sosmed = models.CharField(max_length=100)
-
-    gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
-    umur = models.CharField(max_length=50)
-
+    
+    # Using JSONField for list data - much cleaner for free-form strings
+    campaign_goals = models.JSONField(default=list)
+    social_platforms = models.JSONField(default=list)
+    budget_range = models.CharField(max_length=100)  # Free-form string
+    timeline = models.CharField(max_length=100)      # Free-form string
+    target_age_range = models.JSONField(default=list)
+    target_gender = models.JSONField(default=list)
+    preferred_platforms = models.JSONField(default=list)
+    
     target_locations = models.ManyToManyField(Domicile, related_name="campaigns")
     target_interests = models.ManyToManyField(Category, related_name="campaigns")
-
-    category_product = models.CharField(max_length=100)
-    description_product = models.TextField()
+    
+    product_category = models.CharField(max_length=100)  # Free-form string
+    product_description = models.TextField()
+    
     recommended_influencers = models.ManyToManyField(Influencer, blank=True, related_name='recommended_for')
 
 
     def __str__(self):
-        return f"{self.campaign_goal} - {self.user}"
+        return f"{self.campaign_goals} - {self.user}"
 
 
 class MatchingReport(models.Model):

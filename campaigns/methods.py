@@ -10,13 +10,13 @@ import openai
 def generate_query(campaign, locations, categories_data):
     prompt = (
         "Create a concise search query for an influencer marketing campaign with the following details:\n"
-        f"Goal: {campaign.campaign_goal}\n"
-        f"Preferred Social Media: {campaign.prefer_sosmed}\n"
-        f"Target Gender: {campaign.gender}\n"
-        f"Target Age Range: {campaign.umur}\n"
+        f"Goal: {campaign.campaign_goals}\n"
+        f"Preferred Social Media: {campaign.preferred_platforms}\n"
+        f"Target Gender: {campaign.target_gender}\n"
+        f"Target Age Range: {campaign.target_age_range}\n"
         f"Target Locations: {', '.join(locations) if locations else 'None'}\n"
         f"Target Interests/Categories: {', '.join(categories_data) if categories_data else 'None'}\n"
-        f"Product Category: {campaign.category_product}\n"
+        f"Product Category: {campaign.product_category}\n"
         "Return a short, focused search query string combining the key points to find suitable influencers, "
         "and include an inferred influencer persona (e.g., mom, student, beauty enthusiast, dad/father,  etc.) directly within the query itself."
     )
